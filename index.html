@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Supermall Simulator - Jadilah owner supermarket terbesar! Bangun, sewa, dan kembangkan mall impianmu." />
+    <title>Supermall Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css">
+  </head>
+  <body>
+    <div id="app">
+      <!-- Loading Screen -->
+      <div id="loading-screen">
+        <div class="loading-content">
+          <div class="loading-logo">🏬</div>
+          <h1>SUPERMALL SIMULATOR</h1>
+          <p>Memuat dunia bisnis Anda...</p>
+          <div class="loading-bar-wrapper">
+            <div class="loading-bar" id="loading-bar"></div>
+          </div>
+          <span class="loading-percent" id="loading-percent">0%</span>
+        </div>
+      </div>
+
+      <!-- Main Game Canvas -->
+      <canvas id="game-canvas"></canvas>
+
+      <!-- HUD - Top Bar -->
+      <div id="hud-top">
+        <div class="hud-left">
+          <div class="mall-info">
+            <span class="mall-icon">🏬</span>
+            <div>
+              <div class="mall-name" id="mall-name">Mall Saya</div>
+              <div class="mall-level">Level <span id="mall-level">1</span> • <span id="mall-tier">Pasar Mini</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="hud-center">
+          <div class="resource-bar">
+            <div class="resource-item" id="coin-display">
+              <span class="resource-icon">💰</span>
+              <div class="resource-info">
+                <span class="resource-label">Koin</span>
+                <span class="resource-value" id="coin-value">10,000</span>
+              </div>
+            </div>
+            <div class="resource-divider"></div>
+            <div class="resource-item" id="income-display">
+              <span class="resource-icon">📈</span>
+              <div class="resource-info">
+                <span class="resource-label">Pemasukan/detik</span>
+                <span class="resource-value income-positive" id="income-value">+0</span>
+              </div>
+            </div>
+            <div class="resource-divider"></div>
+            <div class="resource-item">
+              <span class="resource-icon">🏪</span>
+              <div class="resource-info">
+                <span class="resource-label">Toko Aktif</span>
+                <span class="resource-value" id="shops-count">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hud-right">
+          <button class="hud-btn" id="btn-sound" title="Toggle Suara">🔊</button>
+          <button class="hud-btn" id="btn-theme" title="Ganti Tema">🌙</button>
+          <button class="hud-btn" id="btn-help" title="Bantuan">❓</button>
+        </div>
+      </div>
+
+      <!-- Bottom Action Bar -->
+      <div id="hud-bottom">
+        <div class="action-tabs">
+          <button class="tab-btn active" id="tab-build" data-tab="build">
+            <span>🏗️</span>
+            <span>Bangun</span>
+          </button>
+          <button class="tab-btn" id="tab-expand" data-tab="expand">
+            <span>📐</span>
+            <span>Ekspansi</span>
+          </button>
+          <button class="tab-btn" id="tab-manage" data-tab="manage">
+            <span>👥</span>
+            <span>Kelola</span>
+          </button>
+          <button class="tab-btn" id="tab-upgrade" data-tab="upgrade">
+            <span>⬆️</span>
+            <span>Upgrade</span>
+          </button>
+        </div>
+        <div class="action-panel" id="action-panel">
+          <!-- Build Panel -->
+          <div class="panel-content active" id="panel-build">
+            <div class="panel-title">🏗️ Pilih Tipe Kios</div>
+            <div class="shop-grid" id="shop-grid">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+          <!-- Expand Panel -->
+          <div class="panel-content" id="panel-expand">
+            <div class="panel-title">📐 Ekspansi Lahan</div>
+            <div class="expand-grid" id="expand-grid">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+          <!-- Manage Panel -->
+          <div class="panel-content" id="panel-manage">
+            <div class="panel-title">👥 Manajemen Tenant</div>
+            <div class="manage-list" id="manage-list">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+          <!-- Upgrade Panel -->
+          <div class="panel-content" id="panel-upgrade">
+            <div class="panel-title">⬆️ Upgrade Mall</div>
+            <div class="upgrade-list" id="upgrade-list">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Side Panel - Selected Tile Info -->
+      <div id="tile-info-panel" class="hidden">
+        <div class="tile-info-header">
+          <span id="tile-info-icon">🟩</span>
+          <div>
+            <div id="tile-info-name">Lahan Kosong</div>
+            <div id="tile-info-status">Tersedia</div>
+          </div>
+          <button class="close-btn" id="close-tile-info">✕</button>
+        </div>
+        <div class="tile-info-body">
+          <div class="tile-stat-row" id="tile-income-row">
+            <span>💰 Pendapatan:</span>
+            <span id="tile-income">-</span>
+          </div>
+          <div class="tile-stat-row" id="tile-tenant-row">
+            <span>👤 Tenant:</span>
+            <span id="tile-tenant">-</span>
+          </div>
+          <div class="tile-stat-row" id="tile-level-row">
+            <span>⭐ Level:</span>
+            <span id="tile-level">-</span>
+          </div>
+          <div class="tile-stat-row" id="tile-upgcost-row" style="display:none">
+            <span>🔧 Biaya Upgrade:</span>
+            <span id="tile-upgcost">-</span>
+          </div>
+          <div class="level-progress" id="level-progress" style="display:none">
+            <div class="level-progress-label">
+              <span id="lvl-label-from">Lv.1</span>
+              <span id="lvl-label-to">Max: Lv.5</span>
+            </div>
+            <div class="level-progress-bar">
+              <div class="level-progress-fill" id="lvl-progress-fill" style="width:20%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="tile-info-actions" id="tile-actions">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Floating Income Indicator -->
+      <div id="floating-income-container"></div>
+
+      <!-- Notification Toast -->
+      <div id="toast-container"></div>
+
+      <!-- Milestone Modal -->
+      <div id="milestone-modal" class="modal hidden">
+        <div class="modal-content milestone-content">
+          <div class="milestone-icon" id="milestone-icon">🎉</div>
+          <h2 id="milestone-title">Level Up!</h2>
+          <p id="milestone-desc">Mall Anda semakin berkembang!</p>
+          <button class="btn-primary" id="milestone-close">Lanjutkan!</button>
+        </div>
+      </div>
+
+      <!-- Control Hints -->
+      <div id="control-hints">
+        <div class="hint-item"><kbd>Klik</kbd> Pilih Tile</div>
+        <div class="hint-item"><kbd>Drag</kbd> Putar Kamera</div>
+        <div class="hint-item"><kbd>Scroll</kbd> Zoom</div>
+        <div class="hint-item"><kbd>R</kbd> Reset Kamera</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
